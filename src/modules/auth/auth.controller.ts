@@ -1,8 +1,7 @@
-import { Body, Controller, Post, Res, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/auth.dto';
-
 
 @Controller('auth')
 export class AuthController {
@@ -12,18 +11,14 @@ export class AuthController {
   async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {
       const result = await this.authService.SignUp(createUserDto);
-
       if (!result) {
-          return res.status(404).json({
-            message: 'No se pudo crear el usuario o el usuario ya existe',
-          });
-        }
-        return res.status(201).json({
-             message: 'Usuario nuevo creado',
-        });
-
+        return res.status(404).json({ message: 'User not found' });
+      }
+      return res.status(201).json(result);
     } catch (e) {
-        throw new BadRequestException('Something bad happened', { cause: new Error(), description: 'Some error description' })
+      const statusCode = e?.getStatus() || 500;
+      const errorMessage = e?.message || 'Internal Server Error';
+      return res.status(statusCode).json({ message: errorMessage });
     }
   }
 }

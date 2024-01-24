@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
+import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://gnoboca:42180329Gnoboc@cluster0.vy7ivdw.mongodb.net/GYM',
-    ),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.DB_URL),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [UserController],
+  providers: [],
 })
 export class AppModule {}
