@@ -17,14 +17,29 @@ export class AuthService {
     private jwtTokenService: JwtService,
   ) {}
 
+  async findUser(id) {
+    const user = await this.userModel.findOne({ id });
+    return user;
+  }
+
+  async validateGoogleUser(googleUser) {
+    const { email, name, lastName } = googleUser;
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      console.log('User not found. Creating...');
+      const newUser = this.userModel.create({ name, lastName, email });
+      return newUser;
+    }
+    console.log('User founded');
+    return user;
+  }
+
   async validateUserCredentials(email: string, password: string): Promise<any> {
     const user = await this.userModel.findOne({ email });
-
     if (!user) {
       throw new NotAcceptableException('Could not find the user');
     }
     const passwordMatch = await comparePassword(password, user.password);
-
     if (passwordMatch) {
       return user;
     }
