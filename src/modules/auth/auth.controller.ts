@@ -1,17 +1,33 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GoogleAuthGuard } from './guards/google.auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(AuthGuard('google'))
   @Get('/google')
+  @UseGuards(GoogleAuthGuard)
+  handleLogin() {
+    return { msg: 'Google auth' };
+  }
 
-  
+  @Get('/google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  handleGoogleRedirect() {
+    return { msg: 'Google redirect' };
+  }
 
   @Post('/signup')
   async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
