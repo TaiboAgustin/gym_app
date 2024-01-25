@@ -35,7 +35,7 @@ export class User {
   membership: Membership;
 
   @Prop({ type: String, enum: Role, default: Role.USER })
-  rol: Role;
+  role: Role;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
