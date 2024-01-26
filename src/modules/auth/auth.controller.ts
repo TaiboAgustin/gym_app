@@ -25,8 +25,9 @@ export class AuthController {
 
   @Get('/google/redirect')
   @UseGuards(GoogleAuthGuard)
-  handleGoogleRedirect() {
-    return { msg: 'Google redirect' };
+  handleGoogleRedirect(@Req() req, @Res() res: Response) {
+    const user = req.user;
+    return res.json({ user });
   }
 
   @Post('/signup')

@@ -92,4 +92,22 @@ export class AuthService {
     });
     return { message: 'User created successfully' };
   }
+
+  serializeUser(user: any, done: (err: Error, user: any) => void): void {
+    // Asegúrate de que la propiedad id esté presente y conviértela a cadena
+    if (user && user.id) {
+      done(null, user.id.toString());
+    } else {
+      done(new Error('Invalid user object during serialization'), null);
+    }
+  }
+
+  async deserializeUser(
+    userId: any,
+    done: (err: Error, user: any) => void,
+  ): Promise<void> {
+    // Implement logic to retrieve user by userId from your data store
+    const user = await this.userModel.findById(userId);
+    done(null, user);
+  }
 }

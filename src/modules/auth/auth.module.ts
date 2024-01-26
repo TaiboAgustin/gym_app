@@ -12,7 +12,7 @@ import { GoogleStrategy } from './strategies/google.strategies';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'local' }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
