@@ -31,17 +31,15 @@ export class AuthController {
   }
 
   @Post('/signup')
-  async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async signUp(@Body() body: CreateUserDto, @Res() res: Response) {
     try {
-      const result = await this.authService.SignUp(createUserDto);
-      if (!result) {
-        return res.status(404).json({ message: 'User not found' });
+      const sign = await this.authService.SignUp(body);
+      if (!sign) {
+        return res.status(404).json({ message: 'Signup failed' });
       }
-      return res.status(201).json(result);
-    } catch (e) {
-      const statusCode = e?.getStatus() || 500;
-      const errorMessage = e?.message || 'Internal Server Error';
-      return res.status(statusCode).json({ message: errorMessage });
+      res.status(201).json({ message: 'SignUp successfully' });
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -50,14 +48,9 @@ export class AuthController {
   async login(@Req() req, @Res() res: Response) {
     try {
       const result = await this.authService.LogIn(req.user);
-      if (!result) {
-        return res.status(404).json({ message: 'User does not exists' });
-      }
-      return res.status(201).json(result);
-    } catch (e) {
-      const statusCode = e?.getStatus() || 500;
-      const errorMessage = e?.message || 'Internal Server Error';
-      return res.status(statusCode).json({ message: errorMessage });
+      res.status(200).json(result);
+    } catch (error) {
+      throw error;
     }
   }
 }

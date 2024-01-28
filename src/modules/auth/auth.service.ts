@@ -30,7 +30,6 @@ export class AuthService {
       const newUser = this.userModel.create({ name, lastName, email });
       return newUser;
     }
-    console.log('User founded');
     return user;
   }
 
@@ -46,20 +45,6 @@ export class AuthService {
     throw new NotAcceptableException('Password invalid');
   }
 
-  async LogIn(user: any) {
-    const payload = {
-      username: user.name,
-      sub: user._id,
-      rol: user.role,
-    };
-
-    const jwtToken = this.jwtTokenService.sign(payload, {
-      secret: process.env.JWT_SECRET_KEY,
-    });
-
-    return { message: `Logged successfully, ${user.name}`, jwtToken };
-  }
-
   async SignUp(body: CreateUserDto) {
     const {
       name,
@@ -73,24 +58,41 @@ export class AuthService {
       membership,
       role,
     } = body;
-    const userFound = await this.userModel.findOne({ email });
+
+    const emailNormalized = email.toLowerCase();
+    const userFound = await this.userModel.findOne({ email: emailNormalized });
     if (userFound) {
       throw new UnauthorizedException('Email already exists');
     }
     const passwordHashed = await hashPassword(password);
+
     await this.userModel.create({
       name,
       lastName,
       age,
       height,
       weight,
-      email,
+      email: emailNormalized,
       password: passwordHashed,
       genre,
       membership,
       role,
     });
     return { message: 'User created successfully' };
+  }
+
+  async LogIn(user: any) {
+    const payload = {
+      username: user.name,
+      sub: user._id,
+      rol: user.role,
+    };
+
+    const jwtToken = this.jwtTokenService.sign(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+    });
+
+    return { message: `Logged successfully, ${user.name}`, jwtToken };
   }
 
   serializeUser(user: any, done: (err: Error, user: any) => void): void {
